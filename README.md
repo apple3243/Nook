@@ -1,3 +1,3 @@
 # Nook
 Created with CodeSandbox
-(React hook exercise)
+(React hook exercise with NomadCoder)
