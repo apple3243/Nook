@@ -1,32 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./styles.css";
 
-// 1. How to use the hook "useInput"
-const useInput = (initialValue, validator) => {
-  const [value, setValue] = useState(initialValue);
-  const onChange = (event) => {
-    const {
-      target: { value }
-    } = event;
-    let willUpdate = true;
-    if (typeof validator === "function") {
-      willUpdate = validator(value);
+const useClick = (onClick) => {
+  // useRef is a React Hook that lets you reference a value that’s not needed for rendering.
+  const element = useRef();
+  useEffect(() => {
+    // useEffect will be called when it is in the state of componentDidmount, conponentDidUpdate
+    if (element.current) {
+      element.current.addEventListener("click", onClick);
     }
-    if (willUpdate) {
-      setValue(value);
-    }
-  };
-  return { value, onChange };
+    // Need to clean up EventListener when it is unmount ~
+    // This function with return will be called when it is in the state of componentWillUnMount
+    return () => {
+      if (element.current) {
+        element.current.removeEventListener("click", onClick);
+      }
+    };
+    // If there had dependency, the function will be called only when it is in the state of componentDidmount
+  }, []);
+  return element;
 };
-
 export default function App() {
-  // const maxLen = (value) => value.length <= 10; //No return if the value is more than 10
-  const Include = (value) => !value.includes("@"); //No return if the value includes @
-  const name = useInput("Mr.", Include);
+  const sayHello = () => (title.current.innerText = "Say Hello");
+  const title = useClick(sayHello);
   return (
     <div className="App">
-      <h1>Hello</h1>
-      <input placeholder="Name" {...name} />
+      <h1 ref={title}>Hello</h1>
     </div>
   );
 }
