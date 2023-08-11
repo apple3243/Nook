@@ -1,31 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import "./styles.css";
 
-const useClick = (onClick) => {
-  // useRef is a React Hook that lets you reference a value that’s not needed for rendering.
-  const element = useRef();
-  useEffect(() => {
-    // useEffect will be called when it is in the state of componentDidmount, conponentDidUpdate
-    if (element.current) {
-      element.current.addEventListener("click", onClick);
+const useConfirm = (message = "", callback, rejection) => {
+  if (typeof callback !== "function") {
+    return;
+  }
+  const confirmAction = () => {
+    if (confirm(message)) {
+      callback();
+    } else {
+      rejection();
     }
-    // Need to clean up EventListener when it is unmount ~
-    // This function with return will be called when it is in the state of componentWillUnMount
-    return () => {
-      if (element.current) {
-        element.current.removeEventListener("click", onClick);
-      }
-    };
-    // If there had dependency, the function will be called only when it is in the state of componentDidmount
-  }, []);
-  return element;
+  };
+  return confirmAction;
 };
+
 export default function App() {
-  const sayHello = () => (title.current.innerText = "Say Hello");
-  const title = useClick(sayHello);
+  const deleteWorld = () => console.log("Deleting the world");
+  const abort = () => console.log("Aborted");
+  const confirmDelete = useConfirm("Are you sure?", deleteWorld, abort);
   return (
     <div className="App">
-      <h1 ref={title}>Hello</h1>
+      <button onClick={confirmDelete}>Delete the world</button>
     </div>
   );
 }
