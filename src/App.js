@@ -1,31 +1,29 @@
 import { useState, useEffect, useRef } from "react";
 import "./styles.css";
 
-const useClick = (onClick) => {
-  // useRef is a React Hook that lets you reference a value that’s not needed for rendering.
+// useFadeIn
+const useFadeIn = (duration = 1, delay = 0) => {
+  if (typeof duration !== "number" || typeof delay !== "number") {
+    return;
+  }
   const element = useRef();
   useEffect(() => {
-    // useEffect will be called when it is in the state of componentDidmount, conponentDidUpdate
     if (element.current) {
-      element.current.addEventListener("click", onClick);
+      const { current } = element;
+      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
+      current.style.opacity = 1;
     }
-    // Need to clean up EventListener when it is unmount ~
-    // This function with return will be called when it is in the state of componentWillUnMount
-    return () => {
-      if (element.current) {
-        element.current.removeEventListener("click", onClick);
-      }
-    };
-    // If there had dependency, the function will be called only when it is in the state of componentDidmount
   }, []);
-  return element;
+  return { ref: element, style: { opacity: 0 } };
 };
+
 export default function App() {
-  const sayHello = () => (title.current.innerText = "Say Hello");
-  const title = useClick(sayHello);
+  const fadeInH1 = useFadeIn(1, 2);
+  const fadeInP = useFadeIn(3, 6);
   return (
     <div className="App">
-      <h1 ref={title}>Hello</h1>
+      <h1 {...fadeInH1}>Hello</h1>
+      <p {...fadeInP}>lorem ipsum lalalalaal</p>
     </div>
   );
 }
