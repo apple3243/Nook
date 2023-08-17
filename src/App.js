@@ -1,31 +1,42 @@
 import { useState, useEffect, useRef } from "react";
 import "./styles.css";
 
-const useClick = (onClick) => {
-  // useRef is a React Hook that lets you reference a value that’s not needed for rendering.
+const useFullscreen = (callback) => {
   const element = useRef();
-  useEffect(() => {
-    // useEffect will be called when it is in the state of componentDidmount, conponentDidUpdate
+  const triggerFull = () => {
     if (element.current) {
-      element.current.addEventListener("click", onClick);
-    }
-    // Need to clean up EventListener when it is unmount ~
-    // This function with return will be called when it is in the state of componentWillUnMount
-    return () => {
-      if (element.current) {
-        element.current.removeEventListener("click", onClick);
+      element.current.requestFullscreen();
+      if (callback && typeof onFullS === "function") {
+        callback(true);
       }
-    };
-    // If there had dependency, the function will be called only when it is in the state of componentDidmount
-  }, []);
-  return element;
+    }
+  };
+  const exitFull = () => {
+    document.exitFullscreen();
+    if (callback && typeof onFullS === "function") {
+      callback(false);
+    }
+  };
+  return { element, triggerFull, exitFull };
 };
+
 export default function App() {
-  const sayHello = () => (title.current.innerText = "Say Hello");
-  const title = useClick(sayHello);
+  const onFullS = (isFull) => {
+    console.log(isFull ? "We are full" : "We are small");
+  };
+  const { element, triggerFull, exitFull } = useFullscreen(onFullS);
   return (
-    <div className="App">
-      <h1 ref={title}>Hello</h1>
+    <div className="App" style={{ height: "1000vh" }}>
+      <div ref={element}>
+        <img
+          ref={element}
+          src="https://i.ibb.co/R6RwNxx/grape.jpg"
+          alt="grape"
+          width="250"
+        />
+        <button onClick={exitFull}>Exit fullscreen</button>
+      </div>
+      <button onClick={triggerFull}>Make fullscreen</button>
     </div>
   );
 }
